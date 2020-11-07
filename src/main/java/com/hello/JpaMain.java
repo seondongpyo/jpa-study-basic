@@ -24,9 +24,13 @@ public class JpaMain {
 //            em.persist(member); // 엔티티를 데이터베이스에 저장
 
             // 엔티티 조회
+//            Member member = em.find(Member.class, 1L);
+//            System.out.println("member.getId() = " + member.getId());
+//            System.out.println("member.getName() = " + member.getName());
+
+            // 엔티티 수정
             Member member = em.find(Member.class, 1L);
-            System.out.println("member.getId() = " + member.getId());
-            System.out.println("member.getName() = " + member.getName());
+            member.setName("userB");
 
             transaction.commit();
 
