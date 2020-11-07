@@ -4,7 +4,7 @@ import com.hello.entity.Member;
 
 import javax.persistence.*;
 
-public class FlushMain {
+public class Flush {
 
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
