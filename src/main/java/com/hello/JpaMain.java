@@ -17,10 +17,16 @@ public class JpaMain {
 
         // !! 반드시 트랜잭션 안에서 처리해야 됨 !!
         try {
-            Member member = new Member();
-            member.setId(1L);
-            member.setName("userA");
-            em.persist(member); // 엔티티를 데이터베이스에 저장
+            // 엔티티 저장
+//            Member member = new Member();
+//            member.setId(1L);
+//            member.setName("userA");
+//            em.persist(member); // 엔티티를 데이터베이스에 저장
+
+            // 엔티티 조회
+            Member member = em.find(Member.class, 1L);
+            System.out.println("member.getId() = " + member.getId());
+            System.out.println("member.getName() = " + member.getName());
 
             transaction.commit();
 
