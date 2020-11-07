@@ -29,8 +29,14 @@ public class JpaMain {
 //            System.out.println("member.getName() = " + member.getName());
 
             // 엔티티 수정
+//            Member member = em.find(Member.class, 1L);
+//            member.setName("userB");
+
+            // 엔티티 삭제
             Member member = em.find(Member.class, 1L);
-            member.setName("userB");
+            em.remove(member);
+            Member findMember = em.find(Member.class, 1L);
+            System.out.println("findMember = " + findMember);   // findMember = null
 
             transaction.commit();
 
