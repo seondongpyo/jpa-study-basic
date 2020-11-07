@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.List;
 
 public class JpaMain {
 
@@ -33,10 +34,18 @@ public class JpaMain {
 //            member.setName("userB");
 
             // 엔티티 삭제
-            Member member = em.find(Member.class, 1L);
-            em.remove(member);
-            Member findMember = em.find(Member.class, 1L);
-            System.out.println("findMember = " + findMember);   // findMember = null
+//            Member member = em.find(Member.class, 1L);
+//            em.remove(member);
+//            Member findMember = em.find(Member.class, 1L);
+//            System.out.println("findMember = " + findMember);   // findMember = null
+
+            // JPQL 활용
+            em.persist(new Member(0L, "memberA"));
+            em.persist(new Member(1L, "memberB"));
+            List<Member> members = em.createQuery("select m from Member m", Member.class).getResultList();
+            for (Member member : members) {
+                System.out.println("member.getName() = " + member.getName());
+            }
 
             transaction.commit();
 
