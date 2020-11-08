@@ -13,8 +13,8 @@ public class Flush {
         tx.begin();
 
         try {
-            Member member = new Member(10L, "member10");
-            em.persist(member);
+//            Member member = new Member(10L, "member10");
+//            em.persist(member);
 
             // flush() 강제 호출
             // 플러시가 호출되면 영속성 컨텍스트의 쓰기 지연 SQL 저장소에 있는 쿼리들을 실제 데이터베이스에 반영한다

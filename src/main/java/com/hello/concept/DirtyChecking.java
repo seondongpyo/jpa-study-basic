@@ -18,7 +18,7 @@ public class DirtyChecking {
         try {
             // 엔티티 수정 : 변경 감지(Dirty Checking)
             Member member = em.find(Member.class, 0L);
-            member.setName("memberC");
+//            member.setName("memberC");
 
             tx.commit();
 

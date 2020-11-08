@@ -40,12 +40,12 @@ public class JpaMain {
 //            System.out.println("findMember = " + findMember);   // findMember = null
 
             // JPQL 활용
-            em.persist(new Member(0L, "memberA"));
-            em.persist(new Member(1L, "memberB"));
-            List<Member> members = em.createQuery("select m from Member m", Member.class).getResultList();
-            for (Member member : members) {
-                System.out.println("member.getName() = " + member.getName());
-            }
+//            em.persist(new Member(0L, "memberA"));
+//            em.persist(new Member(1L, "memberB"));
+//            List<Member> members = em.createQuery("select m from Member m", Member.class).getResultList();
+//            for (Member member : members) {
+//                System.out.println("member.getName() = " + member.getName());
+//            }
 
             transaction.commit();
 
