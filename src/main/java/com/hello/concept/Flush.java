@@ -1,4 +1,4 @@
-package com.hello;
+package com.hello.concept;
 
 import com.hello.entity.Member;
 
