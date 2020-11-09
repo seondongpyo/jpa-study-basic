@@ -18,6 +18,7 @@ import java.util.Date;
     pkColumnValue = "MEMBER_SEQ",   // 키로 사용할 값의 이름
     allocationSize = 1  // 시퀀스를 호출할 때마다 증가할 수 (기본값: 50, 성능 최적화에 사용됨)
 )
+@Table(name = "MEMBER_TEMP")
 public class Member {
 
     @Id // 기본 키를 직접 할당할 경우
