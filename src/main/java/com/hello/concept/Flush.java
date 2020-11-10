@@ -1,7 +1,5 @@
 package com.hello.concept;
 
-import com.hello.entity.Member;
-
 import javax.persistence.*;
 
 public class Flush {
