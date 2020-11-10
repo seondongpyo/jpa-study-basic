@@ -23,12 +23,20 @@ public class JpaTestMain {
 
             Member member = new Member();
             member.setUsername("memberA");
-            member.setTeamId(team.getId());
+            member.setTeam(team);
             em.persist(member);
 
             // 객체 지향스럽지 않다...
+//            Member findMember = em.find(Member.class, member.getId());
+//            Team findTeam = em.find(Team.class, findMember.getId());
+
+            em.flush();
+            em.clear();
+
+            // 객체 지향 모델링으로 수정
             Member findMember = em.find(Member.class, member.getId());
-            Team findTeam = em.find(Team.class, findMember.getId());
+            Team findTeam = findMember.getTeam();
+            System.out.println("findTeam.getName() = " + findTeam.getName());
 
             transaction.commit();
 
