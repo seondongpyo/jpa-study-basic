@@ -23,6 +23,7 @@ public class Team {
 
         Q. 그럼 누구를 연관관계의 주인으로 지정해야 하는가?
             - 외래 키가 있는 곳을 연관관계의 주인으로 지정하라.
+                : 실제 데이터베이스 상에는 Member 테이블에 Team 테이블의 외래 키인 'TEAM_ID' 컬럼이 있다
             - 여기서는 Member의 Team이 연관관계의 주인이다 (@JoinColumn(name = "TEAM_ID"))
      */
     @OneToMany(mappedBy = "team")   // "team" : 연관관계의 주인의 필드명
@@ -50,5 +51,11 @@ public class Team {
 
     public void setMembers(List<Member> members) {
         this.members = members;
+    }
+
+    // 연관관계 편의 메서드
+    public void addMember(Member member) {
+        member.setTeam(this);
+        members.add(member);
     }
 }
