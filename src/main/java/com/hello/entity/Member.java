@@ -1,6 +1,8 @@
 package com.hello.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "MEMBER_TEST")
@@ -14,26 +16,19 @@ public class Member {
     private String username;
 
     /*
-        일대일 연관관계 매핑 정리
-
-        1) 주 테이블(많이 조회하는)에 외래 키가 있는 경우
-            - 주 객체가 대상 객체의 참조를 가지는 것처럼, 주 테이블에 외래 키를 두고 대상 테이블을 찾음
-            - 객체 지향 개발자들이 선호
-            - JPA 매핑 관리
-            - 장점 : 주 테이블만 조회해도 대상 테이블에 데이터가 있는지 확인 가능
-            - 단점 : 값이 없으면 외래 키에 null 허용
-
-        2) 대상 테이블에 외래 키가 있는 경우
-            - 전통적인 데이터베이스 개발자들이 선호
-            - 일대일 단방향 매핑을 JPA에서 지원하지 않음 (양방향은 지원)
-            - 장점 : 주 테이블과 대상 테이블을 일대일에서 일대다로 변경할 때 테이블 구조를 유지할 수 있음
-            - 단점 : 프록시 기능의 한계로 인해 지연 로딩으로 설정해도 항상 즉시 로딩됨
+        다대다 연관관계 매핑
+            - 관계형 데이터베이스는 정규화된 테이블 2개로 다대다 관계를 표현할 수 없음
+                => 연결 테이블을 추가하여 다대다 관계를 일대다, 다대일로 풀어서 처리
+            - 하지만 객체는 컬렉션을 사용하여 객체 2개로 다대다 관계를 처리할 수 있음
+                => 그러나 편리해 보이지만, 실무에서 사용 X
+            - 연결 테이블이 단순히 연결만 하고 끝나지 않음
+            - 주문 시간, 수량 같은 데이터가 들어올 수 있음 (매핑 정보 이외의 추가 정보를 넣는 게 불가능)
      */
+    @ManyToMany
+    @JoinTable(name = "MEMBER_PRODUCT") // 연결 테이블 생성
+    private List<Product> products = new ArrayList<>();
 
-    // 외래 키가 대상 테이블에 있는 일대일 양방향 연관관계 매핑의 경우
-    //  - 외래 키가 Locker에 있으므로, mappedBy 적용
     @OneToOne(mappedBy = "member")
-//    @JoinColumn(name = "LOCKER_ID")
     private Locker locker;
 
     @ManyToOne
