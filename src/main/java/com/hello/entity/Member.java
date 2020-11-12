@@ -13,10 +13,17 @@ public class Member {
     @Column(name = "USERNAME")
     private String username;
 
-    // 일대다 양방향 연관관계 매핑
-    //  - 이런 매핑은 공식적으로 존재하지 않는다
-    //  - 읽기 전용 필드를 사용해서 양방향처럼 사용하는 방법이다
-    //  => 다대일 양방향을 사용하자
+    /*
+        일대일 연관관계 매핑
+            - 다대일(@ManyToOne) 단방향 연관관계 매핑과 유사하다
+            - 외래 키를 관리할 테이블로 주 테이블 또는 대상 테이블 중 하나를 선택할 수 있다
+            - 외래 키가 있는 곳이 연관관계의 주인이다 (반대편은 mappedBy 적용)
+            - 외래 키에 데이터베이스 유니크 제약조건을 추가한다
+     */
+    @OneToOne
+    @JoinColumn(name = "LOCKER_ID")
+    private Locker locker;
+
     @ManyToOne
     @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
     private Team team;
