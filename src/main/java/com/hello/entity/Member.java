@@ -23,10 +23,15 @@ public class Member {
                 => 그러나 편리해 보이지만, 실무에서 사용 X
             - 연결 테이블이 단순히 연결만 하고 끝나지 않음
             - 주문 시간, 수량 같은 데이터가 들어올 수 있음 (매핑 정보 이외의 추가 정보를 넣는 게 불가능)
+
+        Q. 그럼 다대다 연관관계의 한계를 극복하려면?
+            - 연결 테이블용 엔티티를 추가 (연결 테이블을 엔티티로 승격)
+            - @ManyToMany를 @OneToMany, @ManyToOne으로 풀어서 처리
      */
-    @ManyToMany
-    @JoinTable(name = "MEMBER_PRODUCT") // 연결 테이블 생성
-    private List<Product> products = new ArrayList<>();
+
+    // 연결 테이블과의 관계를 일대다, 다대일로 풀어낸다
+    @OneToMany(mappedBy = "member")
+    private List<MemberProduct> memberProducts = new ArrayList<>();
 
     @OneToOne(mappedBy = "member")
     private Locker locker;

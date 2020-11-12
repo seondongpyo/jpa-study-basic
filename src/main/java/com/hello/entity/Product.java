@@ -1,9 +1,6 @@
 package com.hello.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,13 +8,14 @@ import java.util.List;
 public class Product {
 
     @Id @GeneratedValue
+    @Column(name = "PRODUCT_ID")
     private Long id;
 
     private String name;
 
-    // 다대다 양방향 연관관계 매핑 시
-    @ManyToMany(mappedBy = "products")
-    private List<Member> members = new ArrayList<>();
+    // 연결 테이블과의 관계를 일대다, 다대일로 풀어낸다
+    @OneToMany(mappedBy = "product")
+    private List<MemberProduct> memberProducts = new ArrayList<>();
 
     public Long getId() {
         return id;
