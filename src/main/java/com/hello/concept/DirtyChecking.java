@@ -1,6 +1,6 @@
 package com.hello.concept;
 
-import com.hello.entity.MemberTemp;
+import com.hello.entity.Member;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -17,7 +17,7 @@ public class DirtyChecking {
 
         try {
             // 엔티티 수정 : 변경 감지(Dirty Checking)
-            MemberTemp member = em.find(MemberTemp.class, 0L);
+            Member member = em.find(Member.class, 0L);
 //            member.setName("memberC");
 
             tx.commit();

@@ -1,6 +1,6 @@
 package com.hello.concept;
 
-import com.hello.entity.MemberTemp;
+import com.hello.entity.Member;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -18,7 +18,7 @@ public class PersistenceContext {
         try {
             // 새로운 엔티티 생성 (비영속)
 //            Member member = new Member(0L, "memberA");
-            MemberTemp member = new MemberTemp();
+            Member member = new Member();
 
             // 영속 (영속성 컨텍스트에서 해당 엔티티를 관리) = 1차 캐시에 저장
             System.out.println("=== BEFORE ===");
@@ -27,19 +27,19 @@ public class PersistenceContext {
 
             // 1차 캐시에서 조회 (쿼리가 나가지 않음)
             System.out.println("=== BEFORE ===");
-            MemberTemp memberA = em.find(MemberTemp.class, 0L);
+            Member memberA = em.find(Member.class, 0L);
 //            System.out.println("findMemberFromCache.getName() = " + memberA.getName());
             System.out.println("=== AFTER ===");
 
             // 1차 캐시에 없으면 데이터베이스에서 조회 (쿼리가 나감) 후 1차 캐시에 저장
             System.out.println("=== BEFORE ===");
-            MemberTemp memberB1 = em.find(MemberTemp.class, 1L);
+            Member memberB1 = em.find(Member.class, 1L);
 //            System.out.println("findMemberFromDb.getName() = " + memberB1.getName());
             System.out.println("=== AFTER ===");
 
             // 1차 캐시에 저장되어 있으므로 재조회 시 쿼리가 나가지 않는다
             System.out.println("=== BEFORE ===");
-            MemberTemp memberB2 = em.find(MemberTemp.class, 1L);
+            Member memberB2 = em.find(Member.class, 1L);
             System.out.println("findMember = " + memberB2);
             System.out.println("=== AFTER ===");
 

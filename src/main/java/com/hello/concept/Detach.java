@@ -1,6 +1,6 @@
 package com.hello.concept;
 
-import com.hello.entity.MemberTemp;
+import com.hello.entity.Member;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -17,7 +17,7 @@ public class Detach {
 
         try {
             // 1차 캐시에 없는 엔티티 조회 -> 데이터베이스에서 엔티티 조회 -> 1차 캐시에 저장 -> 영속 상태
-            MemberTemp member = em.find(MemberTemp.class, 10L);
+            Member member = em.find(Member.class, 10L);
 //            member.setName("memberAAA"); // 변경 감지를 통해 엔티티를 수정하려고 하는데
 
             em.detach(member); // 엔티티가 준영속 상태로 변경되면 영속성 컨텍스트가 해당 엔티티를 더 이상 관리하지 않으므로

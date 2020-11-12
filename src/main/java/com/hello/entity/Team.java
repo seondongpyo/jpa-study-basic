@@ -13,20 +13,15 @@ public class Team {
 
     private String name;
 
+    // 일대다 단방향 연관관계 매핑 : 일(1)이 연관관계의 주인
     /*
-        << 양방향 연관관계 매핑 >>
-            - 객체의 두 관계 중 하나를 연관관계의 주인으로 지정해야 한다.
-            - 연관관계의 주인만이 외래 키를 관리(등록, 수정)한다.
-            - 연관관계의 주인이 아닌 쪽은 읽기만 가능하다.
-            - 연관관계의 주인은 mappedBy 속성을 사용하지 않는다.
-            - 연관관계의 주인이 아니라면 mappedBy 속성으로 연관관계의 주인을 명시해야 한다.
-
-        Q. 그럼 누구를 연관관계의 주인으로 지정해야 하는가?
-            - 외래 키가 있는 곳을 연관관계의 주인으로 지정하라.
-                : 실제 데이터베이스 상에는 Member 테이블에 Team 테이블의 외래 키인 'TEAM_ID' 컬럼이 있다
-            - 여기서는 Member의 Team이 연관관계의 주인이다 (@JoinColumn(name = "TEAM_ID"))
+        << 단점 >>
+            - 엔티티가 관리하는 외래 키가 다른 테이블(Member)에 있음
+            - 연관관계 관리를 위해 추가로 UPDATE 쿼리가 실행됨
+            => 일대다 단방향보다는 다대일 양방향 매핑을 사용하자
      */
-    @OneToMany(mappedBy = "team")   // "team" : 연관관계의 주인의 필드명
+    @OneToMany
+    @JoinColumn(name = "TEAM_ID") // @JoinColumn이 없으면 중간에 테이블을 하나 추가하는 조인 테이블 방식을 사용하게 됨
     private List<Member> members = new ArrayList<>();
 
     public Long getId() {
@@ -51,11 +46,5 @@ public class Team {
 
     public void setMembers(List<Member> members) {
         this.members = members;
-    }
-
-    // 연관관계 편의 메서드
-    public void addMember(Member member) {
-        member.setTeam(this);
-        members.add(member);
     }
 }
