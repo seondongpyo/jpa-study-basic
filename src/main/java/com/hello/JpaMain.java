@@ -1,11 +1,13 @@
 package com.hello;
 
+import com.hello.entity.Member;
 import com.hello.entity.item.Movie;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.time.LocalDateTime;
 
 public class JpaMain {
 
@@ -16,18 +18,13 @@ public class JpaMain {
         transaction.begin();
 
         try {
-            Movie movie = new Movie();
-            movie.setDirector("directorA");
-            movie.setActor("actorA");
-            movie.setName("바람과 함께 사라지다");
-            movie.setPrice(10000);
-            em.persist(movie);
+            Member member = new Member();
+            member.setUsername("userA");
+            member.setCreatedBy("Kim");
+            member.setCreatedDate(LocalDateTime.now());
 
             em.flush();
             em.clear();
-
-            Movie findMovie = em.find(Movie.class, movie.getId());
-            System.out.println("findMovie = " + findMovie);
 
             transaction.commit();
 
