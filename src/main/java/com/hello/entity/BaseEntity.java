@@ -20,10 +20,10 @@ import java.time.LocalDateTime;
 @MappedSuperclass // 공통 매핑 정보가 필요할 때 사용
 public abstract class BaseEntity {
 
-    @Column("CREATE_MEMBER")
+    @Column(name = "CREATE_MEMBER")
     private String createdBy;
 
-    @Column("UPDATE_MEMBER")
+    @Column(name = "UPDATE_MEMBER")
     private String lastModifiedBy;
 
     private LocalDateTime createdDate;
