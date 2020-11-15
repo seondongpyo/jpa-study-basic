@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "MEMBER_TEST")
 public class Member extends BaseEntity {
 
     @Id @GeneratedValue
@@ -36,8 +35,11 @@ public class Member extends BaseEntity {
     @OneToOne(mappedBy = "member")
     private Locker locker;
 
-    @ManyToOne
-    @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
+    @ManyToOne(
+//        fetch = FetchType.LAZY  // 지연 로딩 설정 (Team을 우선 프록시로 조회한다)
+        fetch = FetchType.EAGER  // 즉시 로딩 설정 (Member와 Team을 같이 조회한다)
+    )
+    @JoinColumn(name = "TEAM_ID")
     private Team team;
 
     public Long getId() {

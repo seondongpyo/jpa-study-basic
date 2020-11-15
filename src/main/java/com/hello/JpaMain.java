@@ -2,10 +2,12 @@ package com.hello;
 
 import com.hello.entity.Member;
 import com.hello.entity.Team;
-import org.hibernate.Hibernate;
-import org.hibernate.jpa.internal.PersistenceUnitUtilImpl;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+import java.util.List;
 
 public class JpaMain {
 
@@ -16,131 +18,128 @@ public class JpaMain {
         transaction.begin();
 
         try {
+            // '즉시 로딩'과 '지연 로딩'
+            // 1. 지연 로딩 설정 시
+            Team team1 = new Team();
+            team1.setName("team1");
+            em.persist(team1);
+
             Member member1 = new Member();
             member1.setUsername("member1");
+            member1.setTeam(team1);
             em.persist(member1);
+
+            em.flush();
+            em.clear();
+
+            Member findMember1 = em.find(Member.class, member1.getId());
+            /*
+                select
+                    member0_.MEMBER_ID as member_i1_4_0_,
+                    member0_.CREATE_MEMBER as create_m2_4_0_,
+                    member0_.createdDate as createdd3_4_0_,
+                    member0_.UPDATE_MEMBER as update_m4_4_0_,
+                    member0_.lastModifiedDate as lastmodi5_4_0_,
+                    member0_.TEAM_ID as team_id7_4_0_,
+                    member0_.USERNAME as username6_4_0_
+                from
+                    MEMBER_TEST member0_
+                where
+                    member0_.MEMBER_ID=?
+             */
+            // => Member 엔티티 조회 시, Team 엔티티 객체가 같이 조회되지 않았다!
+
+            Team findTeam1 = findMember1.getTeam();
+            System.out.println("findTeam1.getClass() = " + findTeam1.getClass()); // Proxy (class com.hello.entity.Team$HibernateProxy$MKONTkEt)
+
+            // 실제 Team 엔티티의 !값을 사용하는 시점!에, Team 프록시 객체가 초기화(select 쿼리 호출)된다. (지연 로딩)
+            System.out.println("findTeam1.getName() = " + findTeam1.getName());
+            /*
+                select
+                    team0_.TEAM_ID as TEAM_ID1_8_0_,
+                    team0_.CREATE_MEMBER as CREATE_M2_8_0_,
+                    team0_.createdDate as createdD3_8_0_,
+                    team0_.UPDATE_MEMBER as UPDATE_M4_8_0_,
+                    team0_.lastModifiedDate as lastModi5_8_0_,
+                    team0_.name as name6_8_0_
+                from
+                    Team team0_
+                where
+                    team0_.TEAM_ID=?
+             */
+
+            ////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////
+
+            // 2. 즉시 로딩 설정 시 (ex. Member와 Team을 자주 함께 사용한다면?)
+            Team team2 = new Team();
+            team2.setName("team2");
+            em.persist(team2);
 
             Member member2 = new Member();
             member2.setUsername("member2");
+            member2.setTeam(team2);
             em.persist(member2);
 
-            // '즉시 로딩'과 '지연 로딩'을 이해하기 위해서는 프록시(Proxy)의 동작 원리에 대해서 먼저 이해해야 한다!
-            // em.find() vs. em.getReference()
-            // 1. em.find() : 데이터베이스를 통해서 실제 엔티티 조회
-//            Member m1 = em.find(Member.class, member1.getId());
-//            Member m2 = em.find(Member.class, member2.getId());
-//            System.out.println("findMember = " + m1.getClass()); // class com.hello.entity.Member
-//            System.out.println("findMember.getId() = " + m1.getId());
-//            System.out.println("findMember.getUsername() = " + m1.getUsername());
-//            System.out.println("(m1 == m2) = " + (m1.getClass() == m2.getClass())); // true
+            em.flush();
+            em.clear();
 
-            // 2. em.getReference() : 가짜(프록시) 엔티티 객체 조회
-            Member m1 = em.find(Member.class, member1.getId());
-            Member m2Ref = em.getReference(Member.class, member2.getId()); // select 쿼리가 호출되지 않음
-            System.out.println("before reference = " + m2Ref.getClass()); // class com.hello.entity.Member$HibernateProxy$Xs3k7Nyl
-            System.out.println("reference.getId() = " + m2Ref.getId()); // id 값을 이미 지정했으므로 select 쿼리가 호출되지 않음
-            System.out.println("reference.getUsername() = " + m2Ref.getUsername()); // 실제 값을 조회할 때 select 쿼리가 호출됨
-            System.out.println("after reference = " + m2Ref.getClass()); // class com.hello.entity.Member$HibernateProxy$Xs3k7Nyl
-            // => 프록시 객체가 초기화된다고 해서 실제 엔티티로 바뀌는 것이 아니다!
-            System.out.println("(m1.getClass() == m2Ref.getClass()) = " + (m1.getClass() == m2Ref.getClass())); // false
+            Member findMember2 = em.find(Member.class, member2.getId());
+            /*
+                select
+                    member0_.MEMBER_ID as MEMBER_I1_4_0_,
+                    member0_.CREATE_MEMBER as CREATE_M2_4_0_,
+                    member0_.createdDate as createdD3_4_0_,
+                    member0_.UPDATE_MEMBER as UPDATE_M4_4_0_,
+                    member0_.lastModifiedDate as lastModi5_4_0_,
+                    member0_.TEAM_ID as TEAM_ID7_4_0_,
+                    member0_.USERNAME as USERNAME6_4_0_,
+                    team1_.TEAM_ID as TEAM_ID1_8_1_,
+                    team1_.CREATE_MEMBER as CREATE_M2_8_1_,
+                    team1_.createdDate as createdD3_8_1_,
+                    team1_.UPDATE_MEMBER as UPDATE_M4_8_1_,
+                    team1_.lastModifiedDate as lastModi5_8_1_,
+                    team1_.name as name6_8_1_
+                from
+                    Member member0_
+                left outer join
+                    Team team1_
+                        on member0_.TEAM_ID=team1_.TEAM_ID
+                where
+                    member0_.MEMBER_ID=?
+             */
+            // => Member 엔티티 조회 시, Team 엔티티도 같이 조인하여 조회된다!
 
-            // 찾으려고 하는 실제 엔티티가 이미 영속성 컨텍스트 안에 있으면 실제 엔티티가 반환된다.
-            Member m1Ref = em.getReference((Member.class), member1.getId());
-            System.out.println("m1Ref.getClass() = " + m1Ref.getClass()); // m1Ref.getClass() = class com.hello.entity.Member
+            Team findTeam2 = findMember2.getTeam();
+            System.out.println("findTeam2.getClass() = " + findTeam2.getClass()); // Proxy가 아닌 실제 Team 엔티티! (class com.hello.entity.Team)
+            System.out.println("findTeam2.getName() = " + findTeam2.getName()); // 이미 값이 채워져 있는 실제 Team 엔티티이므로 프록시처럼 select 쿼리가 호출되지 않는다.
+
+            em.clear();
+
+            ////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////
 
             /*
-                << 가짜(프록시) 객체 >>
-                - 실제 클래스를 상속 받아서 만들어진다.
-                - 실제 클래스와 겉모양이 똑같다.
-                - 이론상 사용하는 입장에서는 조회한 객체가 진짜 객체인지 프록시 객체인지 구분하지 않고 사용하면 된다.
-                - 프록시 객체는 실제 엔티티 객체의 참조(target)를 보관한다.
-                - 프록시 객체를 호출하면 프록시 객체는 실제 엔티티 객체의 메서드를 호출한다.
+                << 프록시와 즉시 로딩 사용 시 주의 >>
+                1. 실무에서는 가급적 지연 로딩만 사용해야 한다.
+                    - 즉시 로딩 적용 시 예상하지 못한 SQL 쿼리가 호출된다!
+                2. 즉시 로딩은 JPQL에서 N + 1 문제를 일으킨다.
+                3. @ManyToOne, @OneToOne은 기본이 즉시 로딩이다. => 지연 로딩으로 설정 후 fetch 조인 활용
+                4. @OneToMany, @ManyToMany는 기본이 지연 로딩이다.
 
-                << 프록시 객체의 초기화 >>
-                1. 클라이언트가 프록시 객체의 실제 값에 접근하려고 하면 (ex. proxy.getUsername())
-                2. 프록시 객체 내부에 실제 Member를 참조하는 target이 없으므로 영속성 컨텍스트에 초기화를 요청한다.
-                3. 영속성 컨텍스트에서 DB를 조회하여 실제 엔티티 객체를 생성하여 target과 연결시킨다.
-                4. target.getUsername()이 호출되면서 실제 Member 엔티티 객체의 메서드인 member.getUsername()이 호출된다.
-
-                << 프록시의 특징 >>
-                1. 프록시 객체는 처음 사용할 때 한 번만 초기화된다.
-                2. 프록시 객체를 초기화할 때, 프록시 객체가 실제 엔티티로 바뀌는 것이 아니다!
-                   프록시 객체가 초기화되면 프록시 객체 내부의 참조에 의해 실제 엔티티에 접근이 가능한 것이다.
-                3. 프록시 객체는 원본 엔티티를 상속해서 만들어지므로, 타입 체크 시 주의해야 한다! (== 대신 instance of 사용)
-                4. 영속성 컨텍스트에 찾고자 하는 엔티티가 이미 있으면 em.getReference()를 호출해도 실제 엔티티가 반환된다.
-                    => JPA는 같은 트랜잭션에서 영속성 컨텍스트의 동일성을 보장하기 때문에 PK가 같으면 항상 같은 인스턴스를 반환한다.
-                       (하단의 (4. 추가) 내용 참조)
-                5. 영속성 컨텍스트의 도움을 받을 수 없는 준영속(detached) 상태일 때 프록시를 초기화하면 예외가 발생한다
-                    => 실무에서 많이 발생하는 예외
-                       (하단의 (5. 추가) 내용 참조)
+                << 실무에서의 지연 로딩 활용 >>
+                1. 모든 연관관계에 지연 로딩을 사용하라!
+                2. 실무에서 즉시 로딩을 사용하지 마라!
+                    => 대신 JPQL fetch 조인이나, 엔티티 그래프 기능을 사용해라!
+                3. 즉시 로딩 사용 시 상상하지 못한 쿼리가 호출된다!
              */
 
-            Member member3 = new Member();
-            member3.setUsername("member3");
-            em.persist(member3);
-
-            em.flush();
-            em.clear();
-
-            // (4. 추가) 프록시 객체로 먼저 조회한 상태에서 실제 엔티티를 조회하려고 해도 프록시 객체가 조회된다.
-            Member refMember = em.getReference(Member.class, member3.getId()); // Proxy
-            Member findMember = em.find(Member.class, member3.getId()); // Member?
-            System.out.println("refMember.getClass() = " + refMember.getClass()); // Proxy
-            System.out.println("findMember.getClass() = " + findMember.getClass()); // (주의) Member가 아니라 Proxy!
-            System.out.println("(refMember == findMember) = " + (refMember == findMember)); // true
-            //  => JPA는 어떻게든 같은 트랜잭션에서 영속성 컨텍스트의 동일성을 보장하려고 하기 때문
-
-            // 영속성 컨텍스트의 도움을 받을 수 없는 준영속(detached) 상태일 때 프록시를 초기화하면 예외가 발생한다
-            Member member4 = new Member();
-            member4.setUsername("member4");
-            em.persist(member4);
-
-            em.flush();
-            em.clear();
-
-            Member refMember4 = em.getReference(Member.class, member4.getId()); // 프록시 객체를 조회했는데
-//            em.detach(refMember4);  // 준영속 상태라면
-            System.out.println("refMember4.getUsername() = " + refMember4.getUsername()); // 프록시를 초기화할 때 예외가 발생한다.
-            // org.hibernate.LazyInitializationException: could not initialize proxy [com.hello.entity.Member#4] - no Session
-
-            // << 프록시 객체의 확인 >>
-            // 1. 프록시 인스턴스의 초기화 여부 확인 (PersistenceUnitUtil.isLoaded())
-            Member member5 = new Member();
-            member5.setUsername("member5");
-            em.persist(member5);
-
-            em.flush();
-            em.clear();
-
-            Member refMember5 = em.getReference(Member.class, member5.getId());
-            System.out.println("loaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember5)); // 초기화 여부 확인 : false
-            refMember5.getUsername(); // 초기화
-            System.out.println("loaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember5)); // 초기화 여부 확인 : true
-
-            // 2. 프록시 클래스 확인 방법 (proxy.getClass().getName())
-            Member member6 = new Member();
-            member6.setUsername("member6");
-            em.persist(member6);
-
-            em.flush();
-            em.clear();
-
-            Member refMember6 = em.getReference(Member.class, member6.getId());
-            System.out.println("refMember6.getClass().getName() = " + refMember6.getClass().getName());
-            // => com.hello.entity.Member$HibernateProxy$yVRQ98WB
-
-            // 3. 프록시 강제 초기화 (Hibernate에서 제공, JPA 표준은 강제 초기화가 없음)
-            Member member7 = new Member();
-            member7.setUsername("member7");
-            em.persist(member7);
-
-            em.flush();
-            em.clear();
-
-            Member refMember7 = em.getReference(Member.class, member7.getId());
-            System.out.println("refMember7.getClass() = " + refMember7.getClass()); // Proxy
-            Hibernate.initialize(refMember7); // Hibernate 프록시 강제 초기화 (select 쿼리가 호출됨)
-            // => Hibernate가 아닌 다른 구현체인 경우에는 proxy.getUsername() 같은 메서드를 호출하여 강제로 초기화할 수 있다.
+            System.out.println("=========== JPQL 시작 ===========");
+            List<Member> members = em.createQuery("select m from Member m", Member.class).getResultList();
+            for (Member member : members) {
+                System.out.println("member.getUsername() = " + member.getUsername());
+            }
+            System.out.println("=========== JPQL 끝 ===========");
 
             transaction.commit();
 
@@ -149,20 +148,9 @@ public class JpaMain {
             e.printStackTrace();
 
         } finally {
-            emf.close();
             em.close();
         }
-    }
 
-    private static void printMember(Member member) {
-        System.out.println("member.getUsername() = " + member.getUsername());
-    }
-
-    private static void printMemberAndTeam(Member member) {
-        String username = member.getUsername();
-        System.out.println("username = " + username);
-
-        Team team = member.getTeam();
-        System.out.println("team.getName() = " + team.getName());
+        emf.close();
     }
 }
