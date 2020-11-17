@@ -1,6 +1,7 @@
 package com.hello.entity;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,24 @@ public class Member extends BaseEntity {
 
     @Column(name = "USERNAME")
     private String username;
+
+    // Period 임베디드 값 타입
+    @Embedded // 값 타입을 사용하는 곳에 표시
+    private Period workPeriod;
+
+    // Address 임베디드 값 타입
+    @Embedded // 값 타입을 사용하는 곳에 표시
+    private Address homeAddress;
+
+    // Q. 한 엔티티에서 같은 값 타입을 사용하려면? -> 컬럼 명이 중복된다.
+    // A. @AttributeOverrides, @AttributeOverride를 사용해서 컬럼 이름을 재정의 할 수 있다
+    @AttributeOverrides({
+        @AttributeOverride(name = "city", column = @Column(name = "WORK_CITY")),
+        @AttributeOverride(name = "street", column = @Column(name = "WORK_STREET")),
+        @AttributeOverride(name = "zipcode", column = @Column(name = "WORK_ZIPCODE"))
+    })
+    @Embedded
+    private Address workAddress;
 
     /*
         다대다 연관관계 매핑
@@ -64,5 +83,37 @@ public class Member extends BaseEntity {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public Period getWorkPeriod() {
+        return workPeriod;
+    }
+
+    public void setWorkPeriod(Period workPeriod) {
+        this.workPeriod = workPeriod;
+    }
+
+    public Address getHomeAddress() {
+        return homeAddress;
+    }
+
+    public void setHomeAddress(Address homeAddress) {
+        this.homeAddress = homeAddress;
+    }
+
+    public List<MemberProduct> getMemberProducts() {
+        return memberProducts;
+    }
+
+    public void setMemberProducts(List<MemberProduct> memberProducts) {
+        this.memberProducts = memberProducts;
+    }
+
+    public Locker getLocker() {
+        return locker;
+    }
+
+    public void setLocker(Locker locker) {
+        this.locker = locker;
     }
 }
