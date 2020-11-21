@@ -52,6 +52,10 @@ public class  JpaValueMain {
 
 
         3. 컬렉션 값 타입(collection value type)
+            - 값 타입을 하나 이상 저장할 때 사용
+            - @ElementCollection, @CollectionTable 사용
+            - 데이터베이스는 컬렉션을 같은 테이블에 저장할 수 없다
+            - 컬렉션을 저장하기 위한 별도의 테이블이 필요하다
      */
 
     public static void main(String[] args) {

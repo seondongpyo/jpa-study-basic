@@ -3,7 +3,9 @@ package com.hello.entity;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Member extends BaseEntity {
@@ -14,6 +16,23 @@ public class Member extends BaseEntity {
 
     @Column(name = "USERNAME")
     private String username;
+
+    // 값 타입 컬렉션 시작 =====================================
+    @ElementCollection
+    @CollectionTable(
+        name = "FAVORITE_FOOD", // 테이블명을 지정
+        joinColumns = @JoinColumn(name = "MEMBER_ID")
+    )
+    @Column(name = "FOOD_NAME")
+    private Set<String> favoriteFoods = new HashSet<>();
+
+    @ElementCollection
+    @CollectionTable(
+        name = "ADDRESS",
+        joinColumns = @JoinColumn(name = "MEMBER_ID")
+    )
+    private List<Address> addressHistory = new ArrayList<>();
+    // 값 타입 컬렉션 끝 ========================================
 
     // Period 임베디드 값 타입
     @Embedded // 값 타입을 사용하는 곳에 표시
@@ -32,20 +51,6 @@ public class Member extends BaseEntity {
     })
     @Embedded
     private Address workAddress;
-
-    /*
-        다대다 연관관계 매핑
-            - 관계형 데이터베이스는 정규화된 테이블 2개로 다대다 관계를 표현할 수 없음
-                => 연결 테이블을 추가하여 다대다 관계를 일대다, 다대일로 풀어서 처리
-            - 하지만 객체는 컬렉션을 사용하여 객체 2개로 다대다 관계를 처리할 수 있음
-                => 그러나 편리해 보이지만, 실무에서 사용 X
-            - 연결 테이블이 단순히 연결만 하고 끝나지 않음
-            - 주문 시간, 수량 같은 데이터가 들어올 수 있음 (매핑 정보 이외의 추가 정보를 넣는 게 불가능)
-
-        Q. 그럼 다대다 연관관계의 한계를 극복하려면?
-            - 연결 테이블용 엔티티를 추가 (연결 테이블을 엔티티로 승격)
-            - @ManyToMany를 @OneToMany, @ManyToOne으로 풀어서 처리
-     */
 
     // 연결 테이블과의 관계를 일대다, 다대일로 풀어낸다
     @OneToMany(mappedBy = "member")
@@ -85,6 +90,22 @@ public class Member extends BaseEntity {
         this.team = team;
     }
 
+    public List<MemberProduct> getMemberProducts() {
+        return memberProducts;
+    }
+
+    public void setMemberProducts(List<MemberProduct> memberProducts) {
+        this.memberProducts = memberProducts;
+    }
+
+    public Locker getLocker() {
+        return locker;
+    }
+
+    public void setLocker(Locker locker) {
+        this.locker = locker;
+    }
+
     public Period getWorkPeriod() {
         return workPeriod;
     }
@@ -101,19 +122,19 @@ public class Member extends BaseEntity {
         this.homeAddress = homeAddress;
     }
 
-    public List<MemberProduct> getMemberProducts() {
-        return memberProducts;
+    public Set<String> getFavoriteFoods() {
+        return favoriteFoods;
     }
 
-    public void setMemberProducts(List<MemberProduct> memberProducts) {
-        this.memberProducts = memberProducts;
+    public void setFavoriteFoods(Set<String> favoriteFoods) {
+        this.favoriteFoods = favoriteFoods;
     }
 
-    public Locker getLocker() {
-        return locker;
+    public List<Address> getAddressHistory() {
+        return addressHistory;
     }
 
-    public void setLocker(Locker locker) {
-        this.locker = locker;
+    public void setAddressHistory(List<Address> addressHistory) {
+        this.addressHistory = addressHistory;
     }
 }
